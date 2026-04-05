@@ -8,7 +8,7 @@
     <!-- Локальная ссылка на Font Awesome (по-прежнему внешняя, но локальная) -->
     <link rel="stylesheet" href="lib/fontawesome/css/all.min.css">
     <!-- Локальная ссылка на Chart.js (по-прежнему внешняя, но локальная) -->
-    <script src="lib/chartjs/chart.min.js"></script>
+    <script type="module" src="lib/chartjs/chart.min.js"></script>
 
     <!-- Встроенные стили (бывший style.css) -->
     <style>
@@ -385,7 +385,9 @@
     </div>
 
     <!-- Встроенный скрипт (бывший script.js) -->
-    <script>
+    <script type="module"> <!-- ADD type="module" HERE -->
+        // IMPORT Chart from the Chart.js module
+        import { Chart } from './lib/chartjs/chart.min.js'; // ADD THIS LINE
         // Глобальные переменные для хранения экземпляров графиков Chart.js
         // Инициализируем их как null, пока не будут созданы
         let caloriesPieChart = null;
