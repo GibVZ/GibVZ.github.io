@@ -4,14 +4,288 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeuroFlow Demo</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome для иконок настроения и других элементов -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Локальная ссылка на Font Awesome (по-прежнему внешняя, но локальная) -->
+    <link rel="stylesheet" href="lib/fontawesome/css/all.min.css">
+    <!-- Локальная ссылка на Chart.js (по-прежнему внешняя, но локальная) -->
+    <script src="lib/chartjs/chart.min.js"></script>
+
+    <!-- Встроенные стили (бывший style.css) -->
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f6; /* Light blue-grey background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for longer content */
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .app-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px; /* Typical phone width */
+            margin: 20px auto; /* Centering with margin for small screens */
+            overflow: hidden;
+            min-height: 80vh; /* Ensure it takes up enough vertical space */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header and Tab Buttons */
+        .tab-buttons {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex-grow: 1;
+            padding: 12px 10px;
+            border: none;
+            background-color: transparent;
+            color: #555;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent; /* For active indicator */
+        }
+
+        .tab-button:hover {
+            color: #007bff;
+        }
+
+        .tab-button.active {
+            color: #007bff;
+            border-bottom: 3px solid #007bff;
+            background-color: #e6f2ff; /* Light background for active tab */
+        }
+
+        /* Tab Content */
+        .tab-content {
+            padding: 20px 15px;
+            display: none; /* Это ключ! По умолчанию все скрыто */
+            flex-grow: 1; /* Allow content to grow */
+            overflow-y: auto; /* Enable scrolling for tab content if needed */
+        }
+
+        .tab-content.active {
+            display: block; /* Только активная вкладка показывается */
+        }
+
+        .card {
+            background-color: #fdfdfd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        .card h2 {
+            color: #2c3e50;
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .card h3 {
+            color: #34495e;
+            font-size: 1.2em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .ai-recommendation {
+            background-color: #e8f4fd;
+            color: #2196F3;
+            border-left: 4px solid #2196F3;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Diet Tab Specifics */
+        #meal-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        #meal-list li {
+            background-color: #f1f8fc;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e2eaf0;
+            font-size: 0.95em;
+        }
+
+        .add-meal-section, .add-task-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        select, input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 0.95em;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .chart-card {
+            text-align: center;
+            padding: 15px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            margin-top: 15px;
+        }
+
+
+        /* Main Tab Specifics */
+        .mood-selection {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mood-icon {
+            font-size: 3.5em;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .mood-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .mood-icon.selected {
+            color: #ffc107;
+            transform: scale(1.2);
+        }
+
+        .mood-icon[data-mood="bad"].selected { color: #dc3545; }
+        .mood-icon[data-mood="neutral"].selected { color: #ffc107; }
+        .mood-icon[data-mood="good"].selected { color: #28a745; }
+
+
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        #task-list li {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border: 1px solid #eee;
+        }
+
+        #task-list li input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #007bff;
+        }
+
+        /* Circad Tab Specifics */
+        .circad-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .circad-info .sleep-icon {
+            font-size: 4em;
+            color: #007bff;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            background-color: #e6f2ff;
+            padding: 10px;
+        }
+
+
+        .circad-info p {
+            margin: 5px 0;
+            font-size: 1.1em;
+            color: #444;
+        }
+
+        /* Responsive Adjustments (optional, but good practice) */
+        @media (max-width: 480px) {
+            .app-container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            .tab-button {
+                font-size: 1em;
+                padding: 10px 5px;
+            }
+            .card {
+                padding: 15px;
+            }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.3em; }
+            h3 { font-size: 1.1em; }
+            .mood-icon { font-size: 3em; }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
         <header class="tab-buttons">
-            <!-- Здесь передается 'event' (событие) и 'tabName' (имя вкладки) -->
             <button class="tab-button active" onclick="openTab(event, 'diet')">Diet</button>
             <button class="tab-button" onclick="openTab(event, 'main')">Main</button>
             <button class="tab-button" onclick="openTab(event, 'circad')">Circad</button>
@@ -26,11 +300,11 @@
                 <div class="add-meal-section">
                     <select id="food-select">
                         <option value="">Select a food...</option>
-                        <option value="Chicken Salad (350 kcal)">Chicken Salad (350 kcal)</option>
-                        <option value="Oatmeal (200 kcal)">Oatmeal (200 kcal)</option>
-                        <option value="Apple (95 kcal)">Apple (95 kcal)</option>
-                        <option value="Pasta with Vegetables (450 kcal)">Pasta with Vegetables (450 kcal)</option>
-                        <option value="Yogurt (120 kcal)">Yogurt (120 kcal)</option>
+                        <option value="Chicken Salad" data-kcal="350" data-protein="30" data-fat="20" data-carb="15">Chicken Salad (350 kcal)</option>
+                        <option value="Oatmeal" data-kcal="200" data-protein="7" data-fat="4" data-carb="35">Oatmeal (200 kcal)</option>
+                        <option value="Apple" data-kcal="95" data-protein="0" data-fat="0" data-carb="25">Apple (95 kcal)</option>
+                        <option value="Pasta with Vegetables" data-kcal="450" data-protein="15" data-fat="10" data-carb="60">Pasta with Vegetables (450 kcal)</option>
+                        <option value="Yogurt" data-kcal="120" data-protein="10" data-fat="3" data-carb="12">Yogurt (120 kcal)</option>
                     </select>
                     <button onclick="addMeal()">Add Meal</button>
                 </div>
@@ -41,14 +315,13 @@
             </div>
 
             <div class="card chart-card">
-                <h2>Calorie Intake Chart</h2>
-                <div class="placeholder-chart">
-                    <img src="https://via.placeholder.com/300x150/f0f0f0/333333?text=Calorie+Chart" alt="Calorie Chart Placeholder">
-                    <p>Carbohydrates: _g, Fats: _g, Proteins: _g</p>
-                </div>
-                <div class="placeholder-graph">
-                    <img src="https://via.placeholder.com/300x100/f0f0f0/333333?text=Daily+Trend+Graph" alt="Daily Trend Graph Placeholder">
-                </div>
+                <h2>Calorie Intake Breakdown</h2>
+                <canvas id="caloriesPieChart"></canvas>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Daily Macro Trend</h2>
+                <canvas id="macroLineChart"></canvas>
             </div>
         </div>
 
@@ -78,10 +351,8 @@
             </div>
 
             <div class="card chart-card">
-                <h2>Mood Trend</h2>
-                <div class="placeholder-graph">
-                    <img src="https://via.placeholder.com/300x100/f0f0f0/333333?text=Mood+Trend+Graph" alt="Mood Trend Graph Placeholder">
-                </div>
+                <h2>Mood Trend This Week</h2>
+                <canvas id="moodLineChart"></canvas>
             </div>
         </div>
 
@@ -90,7 +361,7 @@
                 <h2>Circadian Rhythms</h2>
                 <p>Based on your sleep patterns, here's your forecast:</p>
                 <div class="circad-info">
-                    <img src="https://via.placeholder.com/100x100/f0f0f0/333333?text=Sleep+Icon" alt="Sleep Icon">
+                    <i class="fas fa-moon sleep-icon"></i>
                     <p><strong>Sleep Quality:</strong> Good</p>
                     <p><strong>Recommended Bedtime:</strong> 10:30 PM</p>
                     <p><strong>Optimal Wake-up Time:</strong> 6:30 AM</p>
@@ -102,14 +373,442 @@
             </div>
 
             <div class="card chart-card">
-                <h2>Sleep Statistics</h2>
-                <div class="placeholder-graph">
-                    <img src="https://via.placeholder.com/300x100/f0f0f0/333333?text=Sleep+Cycle+Graph" alt="Sleep Cycle Graph Placeholder">
-                </div>
+                <h2>Sleep Cycles Last Night</h2>
+                <canvas id="sleepPieChart"></canvas>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Weekly Sleep Score</h2>
+                <canvas id="sleepScoreLineChart"></canvas>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Встроенный скрипт (бывший script.js) -->
+    <script>
+        // Глобальные переменные для хранения экземпляров графиков Chart.js
+        // Инициализируем их как null, пока не будут созданы
+        let caloriesPieChart = null;
+        let macroLineChart = null;
+        let moodLineChart = null;
+        let sleepPieChart = null;
+        let sleepScoreLineChart = null;
+
+        // Данные для отслеживания состояния (для обновления графиков)
+        let currentMacros = { protein: 0, fat: 0, carb: 0 };
+        let currentMoods = [1, 1, 1, 1, 1, 1, 1]; // 7 дней: 0=bad, 1=neutral, 2=good (по умолчанию нейтральные)
+        let mealHistory = []; // Чтобы отслеживать БЖУ принятой пищи
+        let sleepCycleData = {
+            deep: 30, // проценты
+            light: 50,
+            rem: 20
+        };
+        let sleepScoreData = [70, 75, 60, 80, 85, 78, 90]; // 7 дней, по умолчанию
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // При загрузке страницы активируем вкладку 'diet'
+            openTab(null, 'diet');
+        });
+
+        // Tab switching logic
+        function openTab(evt, tabName) {
+            let i, tabcontent, tabbuttons;
+
+            // Скрываем все элементы с классом "tab-content"
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+
+            // Деактивируем все элементы с классом "tab-button"
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+
+            // Показываем текущую вкладку
+            document.getElementById(tabName).classList.add("active");
+
+            // Активируем кнопку, которая открыла вкладку.
+            if (evt) {
+                evt.currentTarget.classList.add("active");
+            } else {
+                document.querySelector(`.tab-button[onclick*="openTab(event, '${tabName}')"]`).classList.add("active");
+            }
+
+            // Инициализируем графики только тогда, когда их вкладка становится активной
+            switch (tabName) {
+                case 'diet':
+                    if (!caloriesPieChart) initCaloriesPieChart();
+                    if (!macroLineChart) initMacroLineChart();
+                    // Обновляем графики только если они были успешно инициализированы
+                    if (caloriesPieChart && macroLineChart) updateDietCharts();
+                    break;
+                case 'main':
+                    if (!moodLineChart) initMoodLineChart();
+                    if (moodLineChart) updateMoodChart();
+                    break;
+                case 'circad':
+                    if (!sleepPieChart) initSleepPieChart();
+                    if (!sleepScoreLineChart) initSleepScoreLineChart();
+                    if (sleepPieChart && sleepScoreLineChart) updateCircadCharts();
+                    break;
+            }
+        }
+
+
+        // --- Chart.js Initialization Functions (разделены на отдельные функции) ---
+        function initCaloriesPieChart() {
+            const caloriesCtx = document.getElementById('caloriesPieChart');
+            if (caloriesCtx) {
+                caloriesPieChart = new Chart(caloriesCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Protein', 'Fat', 'Carbohydrates'],
+                        datasets: [{
+                            data: [currentMacros.protein * 4, currentMacros.fat * 9, currentMacros.carb * 4],
+                            backgroundColor: ['#28a745', '#ffc107', '#007bff'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            title: {
+                                display: false,
+                                text: 'Calorie Intake Breakdown'
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Canvas element with ID 'caloriesPieChart' not found.");
+            }
+        }
+
+        function initMacroLineChart() {
+            const macroCtx = document.getElementById('macroLineChart');
+            if (macroCtx) {
+                macroLineChart = new Chart(macroCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Today'],
+                        datasets: [
+                            {
+                                label: 'Protein (g)',
+                                data: [30, 45, 40, 50, 60, 55, currentMacros.protein],
+                                borderColor: '#28a745',
+                                tension: 0.3,
+                                fill: false
+                            },
+                            {
+                                label: 'Fat (g)',
+                                data: [15, 20, 18, 25, 30, 28, currentMacros.fat],
+                                borderColor: '#ffc107',
+                                tension: 0.3,
+                                fill: false
+                            },
+                            {
+                                label: 'Carbs (g)',
+                                data: [80, 100, 90, 110, 120, 105, currentMacros.carb],
+                                borderColor: '#007bff',
+                                tension: 0.3,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: false,
+                                text: 'Daily Macro Trend'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Canvas element with ID 'macroLineChart' not found.");
+            }
+        }
+
+        function initMoodLineChart() {
+            const moodCtx = document.getElementById('moodLineChart');
+            if (moodCtx) {
+                moodLineChart = new Chart(moodCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Mood Score (0=Bad, 1=Neutral, 2=Good)',
+                            data: currentMoods,
+                            borderColor: '#6f42c1',
+                            tension: 0.3,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: false,
+                                text: 'Mood Trend This Week'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 2,
+                                ticks: {
+                                    callback: function(value) {
+                                        if (value === 0) return 'Bad';
+                                        if (value === 1) return 'Neutral';
+                                        if (value === 2) return 'Good';
+                                        return '';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Canvas element with ID 'moodLineChart' not found.");
+            }
+        }
+
+        function initSleepPieChart() {
+            const sleepPieCtx = document.getElementById('sleepPieChart');
+            if (sleepPieCtx) {
+                sleepPieChart = new Chart(sleepPieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Deep Sleep', 'Light Sleep', 'REM Sleep'],
+                        datasets: [{
+                            data: [sleepCycleData.deep, sleepCycleData.light, sleepCycleData.rem],
+                            backgroundColor: ['#007bff', '#6c757d', '#17a2b8'],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            title: {
+                                display: false,
+                                text: 'Sleep Cycles Last Night'
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Canvas element with ID 'sleepPieChart' not found.");
+            }
+        }
+
+        function initSleepScoreLineChart() {
+            const sleepScoreCtx = document.getElementById('sleepScoreLineChart');
+            if (sleepScoreCtx) {
+                sleepScoreLineChart = new Chart(sleepScoreCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Sleep Score',
+                            data: sleepScoreData,
+                            borderColor: '#fd7e14',
+                            tension: 0.3,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: false,
+                                text: 'Weekly Sleep Score'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Canvas element with ID 'sleepScoreLineChart' not found.");
+            }
+        }
+
+
+        // --- Functions to update Chart Data (используются после инициализации) ---
+        function updateDietCharts() {
+            if (caloriesPieChart) { // Проверяем, существует ли график
+                caloriesPieChart.data.datasets[0].data = [
+                    currentMacros.protein * 4,
+                    currentMacros.fat * 9,
+                    currentMacros.carb * 4
+                ];
+                caloriesPieChart.update();
+            }
+            if (macroLineChart) { // Проверяем, существует ли график
+                macroLineChart.data.datasets[0].data[6] = currentMacros.protein;
+                macroLineChart.data.datasets[1].data[6] = currentMacros.fat;
+                macroLineChart.data.datasets[2].data[6] = currentMacros.carb;
+                macroLineChart.update();
+            }
+        }
+
+        function updateMoodChart() {
+            if (moodLineChart) { // Проверяем, существует ли график
+                moodLineChart.data.datasets[0].data = currentMoods;
+                moodLineChart.update();
+            }
+        }
+
+        function updateCircadCharts() {
+            // Для демо они будут использовать статические данные, но можно обновить
+            if (sleepPieChart) { // Проверяем, существует ли график
+                sleepPieChart.data.datasets[0].data = [sleepCycleData.deep, sleepCycleData.light, sleepCycleData.rem];
+                sleepPieChart.update();
+            }
+            if (sleepScoreLineChart) { // Проверяем, существует ли график
+                sleepScoreLineChart.data.datasets[0].data = sleepScoreData;
+                sleepScoreLineChart.update();
+            }
+        }
+
+
+        // --- Diet Tab Functions ---
+        function addMeal() {
+            const foodSelect = document.getElementById('food-select');
+            const selectedOption = foodSelect.options[foodSelect.selectedIndex];
+            const foodName = selectedOption.value;
+
+            if (foodName) {
+                const kcal = parseInt(selectedOption.dataset.kcal || 0);
+                const protein = parseInt(selectedOption.dataset.protein || 0);
+                const fat = parseInt(selectedOption.dataset.fat || 0);
+                const carb = parseInt(selectedOption.dataset.carb || 0);
+
+                mealHistory.push({ name: foodName, kcal, protein, fat, carb });
+
+                currentMacros.protein += protein;
+                currentMacros.fat += fat;
+                currentMacros.carb += carb;
+
+                const mealList = document.getElementById('meal-list');
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `${foodName} <span>(${kcal} kcal)</span>`;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'x';
+                removeButton.className = 'remove-meal-btn';
+                removeButton.onclick = function() {
+                    currentMacros.protein -= protein;
+                    currentMacros.fat -= fat;
+                    currentMacros.carb -= carb;
+                    mealList.removeChild(listItem);
+                    updateDietRecommendations();
+                    updateDietCharts();
+                };
+                listItem.appendChild(removeButton);
+
+                mealList.appendChild(listItem);
+                foodSelect.value = '';
+                updateDietRecommendations();
+                // Убедимся, что графики инициализированы перед обновлением
+                if (!caloriesPieChart) initCaloriesPieChart();
+                if (!macroLineChart) initMacroLineChart();
+                if (caloriesPieChart && macroLineChart) updateDietCharts();
+            }
+        }
+
+        function updateDietRecommendations() {
+            const meals = Array.from(document.querySelectorAll('#meal-list li')).map(li => li.textContent.split('(')[0].trim());
+            let recommendationText = "Focus on balanced meals throughout the day. Consider adding more fiber.";
+
+            if (meals.length === 0) {
+                recommendationText = "Log your meals to get personalized diet recommendations!";
+            } else if (currentMacros.protein < 50 && currentMacros.protein > 0) {
+                recommendationText = "Consider increasing your protein intake for better satiety and muscle support.";
+            } else if (currentMacros.carb > 200) {
+                recommendationText = "You've consumed a good amount of carbohydrates. Ensure they are mostly from whole grains and vegetables.";
+            } else if (meals.includes("Oatmeal") && meals.includes("Chicken Salad") && meals.includes("Apple")) {
+                recommendationText = "Excellent! You have a well-rounded diet today. Keep it up!";
+            } else if (meals.length >= 2 && !meals.includes("Apple")) {
+                    recommendationText = "Don't forget to include some fruits for essential vitamins and natural sugars!";
+            } else if (currentMacros.fat > 60) {
+                recommendationText = "Your fat intake seems a bit high. Opt for healthy fats and moderation.";
+            }
+
+            document.getElementById('diet-recommendation').textContent = recommendationText;
+        }
+
+
+        // --- Main Tab Functions ---
+        function selectMood(selectedIcon) {
+            const moodIcons = document.querySelectorAll('.mood-icon');
+            moodIcons.forEach(icon => icon.classList.remove('selected'));
+            selectedIcon.classList.add('selected');
+
+            const moodValue = selectedIcon.dataset.mood;
+            let moodScore;
+            if (moodValue === 'bad') moodScore = 0;
+            else if (moodValue === 'neutral') moodScore = 1;
+            else moodScore = 2;
+
+            // Обновляем текущий день в массиве настроений (последний элемент)
+            currentMoods[currentMoods.length - 1] = moodScore;
+            updateMainRecommendations(moodValue);
+            // Убедимся, что график инициализирован перед обновлением
+            if (!moodLineChart) initMoodLineChart();
+            if (moodLineChart) updateMoodChart();
+        }
+
+        function updateMainRecommendations(mood) {
+            let recommendationText = "Remember to take short breaks and stay hydrated. Prioritize your top 3 tasks.";
+            if (mood === 'bad') {
+                recommendationText = "It seems like you're feeling down. Try to incorporate a short mindfulness exercise or outdoor walk today.";
+            } else if (mood === 'good') {
+                recommendationText = "That's great! Keep the positive energy flowing. Consider setting a new small goal for yourself.";
+            } else if (mood === 'neutral') {
+                recommendationText = "A stable mood is good. Perhaps reflect on what brought you here and what could improve your day.";
+            }
+            document.getElementById('main-recommendation').textContent = recommendationText;
+        }
+
+        function addTask() {
+            const newTaskInput = document.getElementById('new-task-input');
+            const taskText = newTaskInput.value.trim();
+            if (taskText) {
+                const taskList = document.getElementById('task-list');
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<input type="checkbox"> ${taskText}`;
+                taskList.appendChild(listItem);
+                newTaskInput.value = ''; // Clear input
+            }
+        }
+    </script>
 </body>
 </html>
