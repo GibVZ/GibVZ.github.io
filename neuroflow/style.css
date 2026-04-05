@@ -1,0 +1,130 @@
+/* Общие стили для body и container */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f2f5 0%, #e0e5ec 100%); /* Мягкий градиент */
+    color: #333;
+    text-align: center;
+    overflow: hidden; /* Чтобы избежать прокрутки из-за большого фона */
+}
+
+.container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    margin: 20px;
+    max-width: 400px; /* Ограничиваем ширину для мобильных устройств */
+    width: 100%;
+    animation: fadeIn 1s ease-out;
+    box-sizing: border-box; /* Учитываем padding в общей ширине */
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Стили для заголовков */
+h1 {
+    color: #2c3e50;
+    font-size: 2.2em; /* Больше для мобильных */
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+/* Стили для таймера обратного отсчета */
+.countdown {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 40px;
+    flex-wrap: wrap; /* Для переноса элементов на новую строку на очень маленьких экранах */
+    gap: 15px; /* Промежуток между элементами */
+}
+
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 10px 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    min-width: 70px; /* Минимальная ширина для каждого блока */
+}
+
+.time-unit span {
+    font-size: 2em; /* Крупнее для лучшей читаемости */
+    font-weight: bold;
+    color: #3498db; /* Яркий акцентный цвет */
+    margin-bottom: 5px;
+}
+
+.time-unit label {
+    font-size: 0.8em;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Стили для социальных ссылок */
+.social-links {
+    margin-top: 30px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Промежуток между иконками */
+}
+
+.social-icon img {
+    width: 45px; /* Размер иконок */
+    height: 45px;
+    border-radius: 50%; /* Для круглой формы */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    filter: grayscale(100%); /* Делаем иконки черно-белыми по умолчанию */
+}
+
+.social-icon:hover img {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    filter: grayscale(0%); /* Цветные при наведении */
+}
+
+
+/* Стили для футера */
+footer {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #888;
+}
+
+/* Медиа-запросы для очень маленьких экранов (опционально) */
+@media (max-width: 350px) {
+    .time-unit {
+        min-width: 60px;
+        padding: 8px 10px;
+    }
+    .time-unit span {
+        font-size: 1.8em;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    p {
+        font-size: 1em;
+    }
+}
