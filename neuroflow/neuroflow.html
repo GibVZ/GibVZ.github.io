@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroFlow Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome для иконок настроения и других элементов -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="tab-buttons">
+            <!-- Здесь передается 'event' (событие) и 'tabName' (имя вкладки) -->
+            <button class="tab-button active" onclick="openTab(event, 'diet')">Diet</button>
+            <button class="tab-button" onclick="openTab(event, 'main')">Main</button>
+            <button class="tab-button" onclick="openTab(event, 'circad')">Circad</button>
+        </header>
+
+        <div id="diet" class="tab-content active">
+            <div class="card">
+                <h2>Today's Meals</h2>
+                <ul id="meal-list">
+                    <!-- Meals will be added here by JS -->
+                </ul>
+                <div class="add-meal-section">
+                    <select id="food-select">
+                        <option value="">Select a food...</option>
+                        <option value="Chicken Salad (350 kcal)">Chicken Salad (350 kcal)</option>
+                        <option value="Oatmeal (200 kcal)">Oatmeal (200 kcal)</option>
+                        <option value="Apple (95 kcal)">Apple (95 kcal)</option>
+                        <option value="Pasta with Vegetables (450 kcal)">Pasta with Vegetables (450 kcal)</option>
+                        <option value="Yogurt (120 kcal)">Yogurt (120 kcal)</option>
+                    </select>
+                    <button onclick="addMeal()">Add Meal</button>
+                </div>
+                <h3>AI Recommendations:</h3>
+                <p class="ai-recommendation" id="diet-recommendation">
+                    Focus on balanced meals throughout the day. Consider adding more fiber.
+                </p>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Calorie Intake Chart</h2>
+                <div class="placeholder-chart">
+                    <img src="https://via.placeholder.com/300x150/f0f0f0/333333?text=Calorie+Chart" alt="Calorie Chart Placeholder">
+                    <p>Carbohydrates: _g, Fats: _g, Proteins: _g</p>
+                </div>
+                <div class="placeholder-graph">
+                    <img src="https://via.placeholder.com/300x100/f0f0f0/333333?text=Daily+Trend+Graph" alt="Daily Trend Graph Placeholder">
+                </div>
+            </div>
+        </div>
+
+        <div id="main" class="tab-content">
+            <div class="card">
+                <h2>How are you feeling today?</h2>
+                <div class="mood-selection">
+                    <i class="far fa-frown mood-icon" data-mood="bad" onclick="selectMood(this)"></i>
+                    <i class="far fa-meh mood-icon" data-mood="neutral" onclick="selectMood(this)"></i>
+                    <i class="far fa-smile mood-icon" data-mood="good" onclick="selectMood(this)"></i>
+                </div>
+                <h3>Your Tasks for Today:</h3>
+                <ul id="task-list">
+                    <li><input type="checkbox"> Finish NeuroFlow demo</li>
+                    <li><input type="checkbox"> Go for a walk</li>
+                    <li><input type="checkbox"> Call Sarah</li>
+                </ul>
+                <div class="add-task-section">
+                    <input type="text" id="new-task-input" placeholder="Add a new task...">
+                    <button onclick="addTask()">Add Task</button>
+                </div>
+
+                <h3>AI Recommendations:</h3>
+                <p class="ai-recommendation" id="main-recommendation">
+                    Remember to take short breaks and stay hydrated. Prioritize your top 3 tasks.
+                </p>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Mood Trend</h2>
+                <div class="placeholder-graph">
+                    <img src="https://via.placeholder.com/300x100/f0f0f0/333333?text=Mood+Trend+Graph" alt="Mood Trend Graph Placeholder">
+                </div>
+            </div>
+        </div>
+
+        <div id="circad" class="tab-content">
+            <div class="card">
+                <h2>Circadian Rhythms</h2>
+                <p>Based on your sleep patterns, here's your forecast:</p>
+                <div class="circad-info">
+                    <img src="https://via.placeholder.com/100x100/f0f0f0/333333?text=Sleep+Icon" alt="Sleep Icon">
+                    <p><strong>Sleep Quality:</strong> Good</p>
+                    <p><strong>Recommended Bedtime:</strong> 10:30 PM</p>
+                    <p><strong>Optimal Wake-up Time:</strong> 6:30 AM</p>
+                </div>
+                <h3>AI Prediction:</h3>
+                <p class="ai-recommendation" id="circad-recommendation">
+                    Maintain a consistent sleep schedule this week for optimal energy levels.
+                </p>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Sleep Statistics</h2>
+                <div class="placeholder-graph">
+                    <img src="https://via.placeholder.com/300x100/f0f0f0/333333?text=Sleep+Cycle+Graph" alt="Sleep Cycle Graph Placeholder">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

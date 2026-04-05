@@ -60,13 +60,13 @@ body {
 /* Tab Content */
 .tab-content {
     padding: 20px 15px;
-    display: none;
+    display: none; /* Это ключ! По умолчанию все скрыто */
     flex-grow: 1; /* Allow content to grow */
     overflow-y: auto; /* Enable scrolling for tab content if needed */
 }
 
 .tab-content.active {
-    display: block;
+    display: block; /* Только активная вкладка показывается */
 }
 
 .card {

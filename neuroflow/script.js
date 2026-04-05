@@ -1,28 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Open default tab on load
-    openTab('diet');
+    // При загрузке страницы активируем вкладку 'diet'
+    // Передаем null вместо event, так как это не клик пользователя
+    openTab(null, 'diet');
 });
 
 // Tab switching logic
-function openTab(tabName) {
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(tabContent => {
-        tabContent.classList.remove('active');
-    });
+function openTab(evt, tabName) {
+    let i, tabcontent, tabbuttons;
 
-    // Deactivate all tab buttons
-    const tabButtons = document.querySelectorAll('.tab-button');
-    tabButtons.forEach(button => {
-        button.classList.remove('active');
-    });
+    // Скрываем все элементы с классом "tab-content"
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove("active");
+    }
 
-    // Show the selected tab content
-    document.getElementById(tabName).classList.add('active');
+    // Деактивируем все элементы с классом "tab-button"
+    tabbuttons = document.getElementsByClassName("tab-button");
+    for (i = 0; i < tabbuttons.length; i++) {
+        tabbuttons[i].classList.remove("active");
+    }
 
-    // Activate the corresponding button
-    document.querySelector(`.tab-button[onclick="openTab('${tabName}')"]`).classList.add('active');
+    // Показываем текущую вкладку
+    document.getElementById(tabName).classList.add("active");
+
+    // Активируем кнопку, которая открыла вкладку.
+    // Если evt существует (был клик), то активируем именно нажатую кнопку.
+    // Если evt null (при загрузке страницы), то находим и активируем нужную кнопку.
+    if (evt) {
+        evt.currentTarget.classList.add("active");
+    } else {
+        // Находим кнопку по имени вкладки, чтобы активировать её при initial load
+        document.querySelector(`.tab-button[onclick*="openTab(event, '${tabName}')"]`).classList.add("active");
+    }
 }
+
 
 // Diet Tab Functions
 function addMeal() {
@@ -43,6 +54,7 @@ function addMeal() {
         removeButton.style.marginLeft = '10px';
         removeButton.onclick = function() {
             mealList.removeChild(listItem);
+            updateDietRecommendations(); // Обновляем рекомендации после удаления
         };
         listItem.appendChild(removeButton);
 
@@ -53,7 +65,6 @@ function addMeal() {
 }
 
 function updateDietRecommendations() {
-    // This is a placeholder for actual AI logic
     const meals = Array.from(document.querySelectorAll('#meal-list li')).map(li => li.textContent.split('(')[0].trim());
     let recommendationText = "Focus on balanced meals throughout the day. Consider adding more fiber.";
 
@@ -63,7 +74,10 @@ function updateDietRecommendations() {
         recommendationText = "Great variety! Keep up the good work with balanced nutrition.";
     } else if (meals.length > 2 && !meals.includes("Apple")) {
          recommendationText = "Remember to include fruits and vegetables for essential vitamins!";
+    } else if (meals.some(meal => meal.includes("Pasta")) && !meals.some(meal => meal.includes("Chicken") || meal.includes("Yogurt"))) {
+        recommendationText = "Consider balancing your carbs with a good source of protein.";
     }
+
 
     document.getElementById('diet-recommendation').textContent = recommendationText;
 }
@@ -83,6 +97,8 @@ function updateMainRecommendations(mood) {
         recommendationText = "It seems like you're feeling down. Try to incorporate a short mindfulness exercise or outdoor walk today.";
     } else if (mood === 'good') {
         recommendationText = "That's great! Keep the positive energy flowing. Consider setting a new small goal for yourself.";
+    } else if (mood === 'neutral') {
+        recommendationText = "A stable mood is good. Perhaps reflect on what brought you here and what could improve your day.";
     }
     document.getElementById('main-recommendation').textContent = recommendationText;
 }
